@@ -12,6 +12,7 @@
         <module>gmall0513-mock</module>
         <module>gmall00513-logger</module>
         <module>gmall0513-common</module>
+        <module>gmall0513-realtime</module>
     </modules>
 
 
