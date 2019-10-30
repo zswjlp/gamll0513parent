@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dw-chart" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/gmall00513-logger" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/gmall0513-canal" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/gmall0513-common" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/gmall0513-mock" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/gmall0513-publisher" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/gmall0513-realtime" charset="UTF-8" />
+  </component>
+</project>

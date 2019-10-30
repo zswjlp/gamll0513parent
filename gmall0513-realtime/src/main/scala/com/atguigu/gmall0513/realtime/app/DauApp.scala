@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSON
 import com.atguigu.gmall0513.common.constants.GmallConstant
 import com.atguigu.gmall0513.realtime.bean.StartUpLog
 import com.atguigu.gmall0513.realtime.util.{MyKafkaUtil, RedisUtil}
+import org.apache.hadoop.conf.Configuration
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.spark.SparkConf
 import org.apache.spark.broadcast.Broadcast
@@ -15,7 +16,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.streaming.dstream.{DStream, InputDStream}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import redis.clients.jedis.Jedis
-
+import org.apache.phoenix.spark._
 
 object DauApp {
     def main(args: Array[String]): Unit = {
@@ -35,6 +36,8 @@ object DauApp {
             startUpLog.logHour = dateHourArr(1)
             startUpLog
         }
+        //设置数据缓存防止保存慢数据写入快崩溃
+        startUplogDstream.cache()
         //3 根据清单进行过滤
 
 
@@ -52,7 +55,8 @@ object DauApp {
                 val flag: Boolean = dauMidSet.contains(startuplog.mid)
                 !flag
             }
-            jedis.close()
+            //Connected to the target VM, address: '127.0.0.1:51422', transport: 'socket'
+//            jedis.close()
             println("过滤后：" + filteredRdd.count())
             filteredRdd
 
@@ -84,7 +88,7 @@ object DauApp {
         //        filteredRdd
 
         //把用户访问清单保存到redis中
-        startUplogDstream.foreachRDD { rdd =>
+        startupRealFilteredDstream.foreachRDD { rdd =>
             rdd.foreachPartition { startupItr =>
                 //executor 执行一次
                 // val jedis = new Jedis("hadoop102",6379)
@@ -92,12 +96,14 @@ object DauApp {
                 for (startup <- startupItr) {
                     //executor 反复执行
                     val dateKey: String = "dau:" + startup.logDate
-                    jedis.sadd(dateKey, startup.mid)
+                    jedis.sadd(dateKey,startup.mid)
                 }
                 jedis.close()
             }
         }
-
+        startupRealFilteredDstream.foreachRDD{rdd=>
+            rdd.saveToPhoenix("GMALL0513_DAU",Seq("MID", "UID", "APPID", "AREA", "OS", "CH", "TYPE", "VS", "LOGDATE", "LOGHOUR", "TS"),new Configuration(),Some("hadoop102,hadoop103,hadoop104:2181"))
+        }
         //       startUplogDstream.foreachRDD{rdd=>
         //           rdd.foreach(startuplog=>{
         //               val jedis = new Jedis("hadoop102",6379)

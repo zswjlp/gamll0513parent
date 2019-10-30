@@ -13,6 +13,7 @@
         <module>gmall00513-logger</module>
         <module>gmall0513-common</module>
         <module>gmall0513-realtime</module>
+        <module>gmall0513-canal</module>
     </modules>
 
 
